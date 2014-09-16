@@ -1,3 +1,21 @@
+// This is super handy
+// https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
+
+buildscript {
+    repositories {
+        maven { url 'https://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+}
+
 allprojects {
   apply plugin: 'idea'
 }
@@ -36,8 +54,14 @@ project(':core-impl') {
     mainClassName = "org.protorepose.valve.Main"
 
   dependencies {
-    compile project(':core-api'), "org.springframework:spring-context:4.1.0.RELEASE"
+    runtime project(':core-api'), "org.springframework:spring-context:4.1.0.RELEASE", 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
   }
+}
+
+project(":core-api") {
+    dependencies {
+        provided "org.springframework:spring-context:4.1.0.RELEASE"
+    }
 }
 
 //Service impl needs the service API, and the Core API
