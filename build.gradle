@@ -1,0 +1,56 @@
+allprojects {
+  apply plugin: 'idea'
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'scala'
+  group = 'org.openrepose.prototype'
+  version = '1.NOPE'
+
+  repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/release" }
+  }
+
+  dependencies {
+    compile "org.scala-lang:scala-library:2.10.4"
+  }
+
+    tasks.withType(ScalaCompile) {
+        scalaCompileOptions.useAnt = false
+    }
+
+    task 'create-dirs' << {
+        sourceSets.all { set ->
+            set.allSource.srcDirs.each {it.mkdirs()}
+        }
+    }
+
+}
+
+//Core IMPL depends on the API
+project(':core-impl') {
+  apply plugin: "application"
+
+    mainClassName = "org.protorepose.valve.Main"
+
+  dependencies {
+    compile project(':core-api'), "org.springframework:spring-context:4.1.0.RELEASE"
+  }
+}
+
+//Service impl needs the service API, and the Core API
+project(':service-impl') {
+  dependencies {
+    compile project(':service-api'), project(':core-api')
+  }
+}
+
+// A "filter" needs the core api, and a service-api
+project(':filter') {
+  dependencies {
+    compile project(':core-api'), project(':service-api')
+  }
+}
+
