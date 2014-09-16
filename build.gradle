@@ -48,33 +48,29 @@ subprojects {
 }
 
 //Core IMPL depends on the API
-project(':core-impl') {
-  apply plugin: "application"
-
-    mainClassName = "org.protorepose.valve.Main"
-
+project(':core') {
+  //CORE assumes it'll have a servlet api in there somewhere, mostly for the filters.
   dependencies {
-    runtime project(':core-api'), "org.springframework:spring-context:4.1.0.RELEASE", 'org.eclipse.jetty:jetty-server:9.2.2.v20140723'
+    compile "org.springframework:spring-context:4.1.0.RELEASE", "org.springframework:spring-web:4.1.0.RELEASE"
+    provided 'javax.servlet:javax.servlet-api:3.1.0'
   }
 }
 
-project(":core-api") {
+project(':valve') {
+    apply plugin: "application"
+
+    mainClassName = "org.protorepose.valve.Main"
     dependencies {
-        provided "org.springframework:spring-context:4.1.0.RELEASE"
+        compile "org.springframework:spring-context:4.1.0.RELEASE",
+                'org.eclipse.jetty:jetty-server:9.2.2.v20140723',
+                'javax.servlet:javax.servlet-api:3.1.0'
     }
 }
 
-//Service impl needs the service API, and the Core API
-project(':service-impl') {
-  dependencies {
-    compile project(':service-api'), project(':core-api')
-  }
-}
+project(':war') {
+  apply plugin: 'war'
 
-// A "filter" needs the core api, and a service-api
-project(':filter') {
-  dependencies {
-    compile project(':core-api'), project(':service-api')
-  }
+    dependencies {
+        compile project(':core')
+    }
 }
-
