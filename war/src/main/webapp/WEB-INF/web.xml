@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>ProtoRepose Root Web App</display-name>
+    <description>Running Repose in a container!</description>
+
+    <!-- I don't think I want any context-params at all, not going to use them.... -->
+    <!-- any configs should be sent in via system properties? -->
+
+    <listener>
+        <display-name>Spring Context Loader</display-name>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!-- set up the servlet stuff -->
+    <servlet id="repose-placeholder-servlet">
+        <servlet-name>only-here-because-it-has-to-be</servlet-name>
+        <servlet-class>org.protorepose.core.servlet.ReposeServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping id="placeholder-servlet-mapping">
+        <servlet-name>only-here-because-it-has-to-be</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>
