@@ -1,4 +1,4 @@
-package org.protorepose.service
+package org.protorepose.services
 
 class ServiceImpl extends Service{
   override def externalService(string: String): Unit = {

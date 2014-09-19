@@ -1,4 +1,4 @@
-package org.protorepose.core
+package org.protorepose.core.services
 
 class CoreServiceImpl extends CoreService {
   override def coreServiceThingy(string: String): Unit = {

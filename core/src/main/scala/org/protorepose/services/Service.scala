@@ -1,4 +1,4 @@
-package org.protorepose.service
+package org.protorepose.services
 
 import org.springframework.stereotype.Component
 

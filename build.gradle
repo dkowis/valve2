@@ -32,7 +32,7 @@ subprojects {
   }
 
   dependencies {
-    compile "org.scala-lang:scala-library:2.10.4"
+    compile "org.scala-lang:scala-library:2.10.4", 'org.slf4j:slf4j-api:1.7.7'
   }
 
     tasks.withType(ScalaCompile) {
@@ -51,7 +51,10 @@ subprojects {
 project(':core') {
   //CORE assumes it'll have a servlet api in there somewhere, mostly for the filters.
   dependencies {
-    compile "org.springframework:spring-context:4.1.0.RELEASE", "org.springframework:spring-web:4.1.0.RELEASE"
+    compile "org.springframework:spring-context:4.1.0.RELEASE",
+            "org.springframework:spring-web:4.1.0.RELEASE",
+            "org.apache.logging.log4j:log4j-core:2.0.2",
+            "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
   }
 }
@@ -71,6 +74,8 @@ project(':war') {
   apply plugin: 'war'
 
     dependencies {
-        compile project(':core')
+        //See: http://logging.apache.org/log4j/2.x/maven-artifacts.html under "Web Servlet Support"
+        // This *might* also matter: http://logging.apache.org/log4j/2.x/manual/webapp.html
+        compile project(':core'), "org.apache.logging.log4j:log4j-web:2.0.2"
     }
 }
