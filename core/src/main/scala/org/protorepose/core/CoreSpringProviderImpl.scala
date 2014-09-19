@@ -1,5 +1,6 @@
 package org.protorepose.core
 
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
@@ -14,24 +15,28 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * We would probably have to do some kind of delta so that we can shut down contexts for filters that arent' being used
  * any longer.
  */
-object CoreSpringProviderImpl extends CoreSpringProvider {
+object CoreSpringProviderImpl extends CoreSpringProvider with LazyLogging {
 
   lazy val coreContext = {
     val context = new AnnotationConfigApplicationContext()
+    context.setDisplayName("CoreServiceContext")
     context.scan("org.protorepose.core.services")
+    context.refresh()
 
     context
   }
 
   lazy val allServicesContext = {
     val context = new AnnotationConfigApplicationContext()
+    context.setDisplayName("AllServicesContext")
     context.setParent(coreServicesContext())
     context.scan("org.protorepose.services")
+    context.refresh()
 
     context
   }
 
-  lazy val filterContextMap:Map[String, ApplicationContext] = {
+  lazy val filterContextMap: Map[String, ApplicationContext] = {
     //NOTE: somewhere around here we would have replaced this with a dynamic list of filters
     // So we can go annotation scan them on demand, not all the time
 
@@ -40,6 +45,7 @@ object CoreSpringProviderImpl extends CoreSpringProvider {
 
     val filterContext = new AnnotationConfigApplicationContext()
     filterContext.setParent(allServicesContext)
+    filterContext.setDisplayName("DerpFilterContext")
 
     //Get the filter class itself
     val classLoader = this.getClass.getClassLoader
@@ -47,6 +53,7 @@ object CoreSpringProviderImpl extends CoreSpringProvider {
 
     val scanPackage = filterClass.getPackage.toString
 
+    logger.info(s"scan package is ${scanPackage}")
 
     filterContext.setParent(allServicesContext)
     filterContext.scan(scanPackage)

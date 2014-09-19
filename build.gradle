@@ -84,6 +84,7 @@ project(':valve') {
 
 project(':war') {
   apply plugin: 'war'
+  apply plugin: 'jetty'
 
     dependencies {
         //See: http://logging.apache.org/log4j/2.x/maven-artifacts.html under "Web Servlet Support"
