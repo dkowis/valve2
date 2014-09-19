@@ -3,7 +3,9 @@ package org.protorepose.services
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.springframework.stereotype.Component
 
+@Component
 class ServiceImpl extends Service with LazyLogging {
 
   val counter:AtomicInteger = new AtomicInteger(0)
