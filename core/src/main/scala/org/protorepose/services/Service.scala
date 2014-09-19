@@ -4,5 +4,5 @@ import org.springframework.stereotype.Component
 
 @Component
 trait Service {
-  def externalService(string:String):Unit
+  def externalService(string:String):Integer
 }

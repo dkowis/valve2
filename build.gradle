@@ -18,6 +18,15 @@ configure(allprojects) {
 
 allprojects {
   apply plugin: 'idea'
+
+    configurations.all {
+        //For all configurations, if something wants commons-logging GTFO it with slf4j's bridge
+        resolutionStrategy.eachDependency {
+            if(it.requested.name == 'commons-logging') {
+                it.useTarget 'org.slf4j:jcl-over-slf4j:1.7.7'
+            }
+        }
+    }
 }
 
 subprojects {
@@ -32,7 +41,10 @@ subprojects {
   }
 
   dependencies {
-    compile "org.scala-lang:scala-library:2.10.4", 'org.slf4j:slf4j-api:1.7.7'
+    compile "org.scala-lang:scala-library:2.10.4",
+            'org.slf4j:slf4j-api:1.7.7',
+            //I can use the scala logging API directly I think
+            'com.typesafe.scala-logging:scala-logging-slf4j_2.10:2.1.2'
   }
 
     tasks.withType(ScalaCompile) {

@@ -2,6 +2,7 @@ package org.protorepose.core.servlet
 
 import javax.servlet._
 
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.protorepose.core.CoreSpringProviderImpl
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.DelegatingFilterProxy
@@ -28,15 +29,18 @@ class ReposeFilter extends DelegatingFilterProxy {
    * @param filterChain Any filter chain that may have preceded us. Could come from a bit of container magic.
    */
   override def doFilter(request: ServletRequest, response: ServletResponse, filterChain: FilterChain): Unit = {
+    logger.info("doing filter in reposeFilter component")
     //I don't think I actually need to do any madness here, possibly.
 
     val derpFilterContext = CoreSpringProviderImpl.filtersContext()("org.protorepose.derpFilter.DerpFilter")
-
+    logger.info("acquired derpfilter context")
     //Ignore the filter chain and just call the filter we have
 
     //This should get the bean of the filter we've got and execute it
     val filter = derpFilterContext.getBean("DerpFilter").asInstanceOf[Filter]
+    logger.info("acquired filter bean")
     filter.doFilter(request, response, filterChain)
+    logger.info("made call to derpfilter!")
 
     super.doFilter(request, response, filterChain)
   }
@@ -50,6 +54,8 @@ class ReposeFilter extends DelegatingFilterProxy {
      *
      * Instead we're going to hard code a single filter, and call it
      */
+
+    logger.info("ReposeFilter Bean init-ed")
 
     super.initFilterBean()
   }
