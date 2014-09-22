@@ -4,9 +4,12 @@
 buildscript {
     repositories {
         maven { url 'https://repo.spring.io/plugins-release' }
+        jcenter()
     }
     dependencies {
-        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7',
+                //https://github.com/johnrengelman/shadow
+                'com.github.jengelman.gradle.plugins:shadow:1.1.1'
     }
 }
 
@@ -75,6 +78,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 project(':valve') {
     apply plugin: "application"
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     configurations {
         warArtifact
