@@ -4,7 +4,6 @@ import javax.servlet._
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.protorepose.services.Service
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

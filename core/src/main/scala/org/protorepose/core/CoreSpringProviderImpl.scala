@@ -51,9 +51,9 @@ object CoreSpringProviderImpl extends CoreSpringProvider with LazyLogging {
     val classLoader = this.getClass.getClassLoader
     val filterClass = classLoader.loadClass(derpFilter)
 
-    val scanPackage = filterClass.getPackage.toString
+    val scanPackage = filterClass.getPackage.getName
 
-    logger.info(s"scan package is ${scanPackage}")
+    logger.info(s"scan package is |${scanPackage}|")
 
     filterContext.setParent(allServicesContext)
     filterContext.scan(scanPackage)

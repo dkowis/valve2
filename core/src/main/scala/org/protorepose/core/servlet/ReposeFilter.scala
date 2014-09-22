@@ -1,5 +1,6 @@
 package org.protorepose.core.servlet
 
+import java.util.concurrent.atomic.AtomicReference
 import javax.servlet._
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
@@ -18,6 +19,8 @@ import org.springframework.web.filter.DelegatingFilterProxy
 @Component("reposeFilter")
 class ReposeFilter extends DelegatingFilterProxy {
 
+  val filterReference = new AtomicReference[Filter]()
+
   /**
    * This is the servlet filter entrance for repose stuff.
    * This is where the start of doing any actual repose work happens.
@@ -33,21 +36,10 @@ class ReposeFilter extends DelegatingFilterProxy {
     logger.info("doing filter in reposeFilter component")
     //I don't think I actually need to do any madness here, possibly.
 
-    val derpFilterContext:ApplicationContext = CoreSpringProviderImpl.filtersContext()("org.protorepose.derpFilter.DerpFilter")
+    val filter = filterReference.get()
 
-    logger.info(s"entire filter context map: ${CoreSpringProviderImpl.filtersContext()}")
-    logger.info("acquired derpfilter context")
-    //Ignore the filter chain and just call the filter we have
-
-    //This should get the bean of the filter we've got and execute it
-
-
-    val filter = derpFilterContext.getBean("DerpFilter").asInstanceOf[Filter]
-    logger.info("acquired filter bean")
     filter.doFilter(request, response, filterChain)
     logger.info("made call to derpfilter!")
-
-    super.doFilter(request, response, filterChain)
   }
 
   //Replaces the init method on the filter, so that this guy can be spring aware
@@ -61,6 +53,24 @@ class ReposeFilter extends DelegatingFilterProxy {
      */
 
     logger.info("ReposeFilter Bean init-ed")
+
+    //Acquire the filter context and make calls
+    val derpFilterContext:ApplicationContext = CoreSpringProviderImpl.filtersContext()("org.protorepose.derpFilter.DerpFilter")
+
+    logger.info(s"entire filter context map: ${CoreSpringProviderImpl.filtersContext()}")
+    logger.info("acquired derpfilter context")
+    //Ignore the filter chain and just call the filter we have
+
+    //This should get the bean of the filter we've got and execute it
+
+    logger.info("Trying to get the bean using a bean by type!")
+    val filter = derpFilterContext.getBean[Filter](classOf[Filter])
+
+    filterReference.set(filter)
+
+    //val filter = derpFilterContext.getBean("DerpFilter").asInstanceOf[Filter]
+    logger.info("acquired filter bean")
+
 
     super.initFilterBean()
   }
