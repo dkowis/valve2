@@ -6,6 +6,8 @@
         </Console>
     </Appenders>
     <Loggers>
+        <!-- Jetty should make less noise -->
+        <Logger name="org.eclipse.jetty" level="info"/>
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>

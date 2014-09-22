@@ -5,7 +5,8 @@ import javax.servlet._
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.protorepose.core.CoreSpringProviderImpl
-import org.springframework.context.ApplicationContext
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.{ApplicationContextAware, ApplicationContext}
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.DelegatingFilterProxy
 
@@ -18,6 +19,9 @@ import org.springframework.web.filter.DelegatingFilterProxy
  */
 @Component("reposeFilter")
 class ReposeFilter extends DelegatingFilterProxy {
+
+  @Autowired
+  val appContext: ApplicationContext = null
 
   val filterReference = new AtomicReference[Filter]()
 
@@ -33,7 +37,8 @@ class ReposeFilter extends DelegatingFilterProxy {
    * @param filterChain Any filter chain that may have preceded us. Could come from a bit of container magic.
    */
   override def doFilter(request: ServletRequest, response: ServletResponse, filterChain: FilterChain): Unit = {
-    logger.info("doing filter in reposeFilter component")
+    logger.info(s"Filtering in ${this}")
+
     //I don't think I actually need to do any madness here, possibly.
 
     val filter = filterReference.get()
@@ -53,6 +58,8 @@ class ReposeFilter extends DelegatingFilterProxy {
      */
 
     logger.info("ReposeFilter Bean init-ed")
+    logger.info(s"What spring context are we in: ${this.appContext}")
+
 
     //Acquire the filter context and make calls
     val derpFilterContext:ApplicationContext = CoreSpringProviderImpl.filtersContext()("org.protorepose.derpFilter.DerpFilter")
