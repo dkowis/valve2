@@ -7,6 +7,7 @@ import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.protorepose.core.CoreSpringProviderImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.{ApplicationContextAware, ApplicationContext}
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.DelegatingFilterProxy
 
@@ -18,7 +19,7 @@ import org.springframework.web.filter.DelegatingFilterProxy
  * that make sense and grab whatever we want out of them.
  */
 @Component("reposeFilter")
-class ReposeFilter extends DelegatingFilterProxy {
+class ReposeFilter @Autowired()(springEnv: Environment) extends DelegatingFilterProxy {
 
   @Autowired
   val appContext: ApplicationContext = null
@@ -37,7 +38,9 @@ class ReposeFilter extends DelegatingFilterProxy {
    * @param filterChain Any filter chain that may have preceded us. Could come from a bit of container magic.
    */
   override def doFilter(request: ServletRequest, response: ServletResponse, filterChain: FilterChain): Unit = {
-    logger.info(s"Filtering in ${this}")
+    val portProp = springEnv.getProperty("port", "UNDEFINED")
+    logger.info(s"Filtering in ${this} on port ${portProp}")
+
 
     //I don't think I actually need to do any madness here, possibly.
 
