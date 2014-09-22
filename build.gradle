@@ -37,6 +37,7 @@ subprojects {
 
   repositories {
     mavenCentral()
+    mavenLocal()
     maven { url "http://repo.spring.io/release" }
   }
 
@@ -70,15 +71,44 @@ project(':core') {
     provided 'javax.servlet:javax.servlet-api:3.1.0'
   }
 }
+import org.apache.tools.ant.filters.ReplaceTokens
 
 project(':valve') {
     apply plugin: "application"
 
+    configurations {
+        warArtifact
+    }
+
     mainClassName = "org.protorepose.valve.Main"
     dependencies {
         compile "org.springframework:spring-context:4.1.0.RELEASE",
-                'org.eclipse.jetty:jetty-server:9.2.2.v20140723',
-                'javax.servlet:javax.servlet-api:3.1.0'
+                "org.eclipse.jetty:jetty-server:${jettyVersion}",
+                "org.eclipse.jetty:jetty-webapp:${jettyVersion}",
+                'javax.servlet:javax.servlet-api:3.1.0',
+                'com.typesafe:config:1.2.1',
+                //Hard depend on core, if we're going to use the servlet directly
+                project(":core")
+        // http://forums.gradle.org/gradle/topics/problem_with_the_ear_plugin#reply_7176985
+        warArtifact project(path: ":war", configuration: "archives")
+    }
+
+    /**
+     * This copies the warArtifact dependency configuration into the build directory
+     */
+    task copyWarFile(type: Copy) {
+        into "$buildDir"
+        from configurations.warArtifact
+    }
+
+    build.dependsOn(copyWarFile)
+
+    processResources {
+        filter ReplaceTokens, tokens: [
+                "warLocation": project.property("buildDir").getAbsolutePath(),
+                "version": project.property("version"),
+                "jettyVersion": project.property("jettyVersion")
+        ]
     }
 }
 
