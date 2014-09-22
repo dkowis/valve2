@@ -45,7 +45,7 @@ object Main extends App with LazyLogging {
 
   /**
    * So I could deploy programmatically a pair of war files, keeping the JVM stuff separate
-   * Not sure how I didn't find this before, but it's super easy.
+   * Not sure how I didn't find this before, but it's super easy. (This could be within old servo)
    * Unfortunately, services are *not* shared amongst the war files, they seem to have their own memory hierarchy
    * @param port
    * @return
@@ -62,6 +62,17 @@ object Main extends App with LazyLogging {
   }
 
 
+  /**
+   * Create a servlet based jetty server that allows us to handle some spring contexts separately
+   * This will configure the context loader listener to use our parent context so that there's a different filter instance
+   * per server, but some of the contexts can be reused.
+   *
+   * This will reuse the filter beans even, between servers.
+   * Only one instance of the services is turned on, and so this will ensure that services are only running once per local
+   * machine.
+   * @param port
+   * @return
+   */
   def servletServer(port:Int):Server = {
     val server = new Server(port)
 
