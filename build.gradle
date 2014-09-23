@@ -88,15 +88,17 @@ project(':valve') {
 
     mainClassName = "org.protorepose.valve.Main"
     dependencies {
-        compile "org.springframework:spring-context:4.1.0.RELEASE",
+        compile "org.springframework:spring-web:4.1.0.RELEASE",
                 "org.eclipse.jetty:jetty-server:${jettyVersion}",
                 "org.eclipse.jetty:jetty-webapp:${jettyVersion}",
                 "org.eclipse.jetty:jetty-annotations:${jettyVersion}",
                 "org.eclipse.jetty:jetty-plus:${jettyVersion}",
                 'javax.servlet:javax.servlet-api:3.1.0',
-                'com.typesafe:config:1.2.1',
+                "org.apache.logging.log4j:log4j-core:2.0.2",
+                "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2",
+                'com.typesafe:config:1.2.1'
                 //Hard depend on core, if we're going to use the servlet directly
-                project(":core")
+                //project(":core")
         // http://forums.gradle.org/gradle/topics/problem_with_the_ear_plugin#reply_7176985
         warArtifact project(path: ":war", configuration: "archives")
     }
