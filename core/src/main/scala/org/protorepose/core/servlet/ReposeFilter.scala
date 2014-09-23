@@ -5,6 +5,7 @@ import javax.servlet._
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.protorepose.core.CoreSpringProviderImpl
+import org.protorepose.core.services.CoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.{ApplicationContextAware, ApplicationContext}
 import org.springframework.core.env.Environment
@@ -19,10 +20,7 @@ import org.springframework.web.filter.DelegatingFilterProxy
  * that make sense and grab whatever we want out of them.
  */
 @Component("reposeFilter")
-class ReposeFilter @Autowired()(springEnv: Environment) extends DelegatingFilterProxy {
-
-  @Autowired
-  val appContext: ApplicationContext = null
+class ReposeFilter @Autowired()(springEnv: Environment, appContext: ApplicationContext, service: CoreService) extends DelegatingFilterProxy {
 
   val filterReference = new AtomicReference[Filter]()
 
@@ -63,6 +61,9 @@ class ReposeFilter @Autowired()(springEnv: Environment) extends DelegatingFilter
     logger.info("ReposeFilter Bean init-ed")
     logger.info(s"What spring context are we in: ${this.appContext}")
 
+    val coreCounter = service.coreServiceThingy("BLEH")
+
+    logger.info(s"Core counter number from repose filter init: ${coreCounter}")
 
     //Acquire the filter context and make calls
     val derpFilterContext:ApplicationContext = CoreSpringProviderImpl.filtersContext()("org.protorepose.derpFilter.DerpFilter")

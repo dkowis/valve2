@@ -14,6 +14,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  *
  * We would probably have to do some kind of delta so that we can shut down contexts for filters that arent' being used
  * any longer.
+ *
+ * TODO: make this handle better core services being handled by the WAR container.
  */
 object CoreSpringProviderImpl extends CoreSpringProvider with LazyLogging {
 
@@ -29,6 +31,8 @@ object CoreSpringProviderImpl extends CoreSpringProvider with LazyLogging {
   lazy val allServicesContext = {
     val context = new AnnotationConfigApplicationContext()
     context.setDisplayName("AllServicesContext")
+    //If we set this directly, and we're in a war file, we will double the core services...
+    //This could result in incorrect behavior, need to figure out how to resolve this
     context.setParent(coreServicesContext())
     context.scan("org.protorepose.services")
     context.refresh()

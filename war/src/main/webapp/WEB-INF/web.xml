@@ -2,43 +2,43 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>ProtoRepose Root Web App</display-name>
-    <description>Running Repose in a container!</description>
+    <!--<display-name>ProtoRepose Root Web App</display-name>-->
+    <!--<description>Running Repose in a container!</description>-->
 
     <!-- I don't think I want any context-params at all, not going to use them.... -->
     <!-- any configs should be sent in via system properties? -->
 
-    <listener>
-        <display-name>Spring Context Loader</display-name>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
+    <!--<listener>-->
+        <!--<display-name>Spring Context Loader</display-name>-->
+        <!--<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>-->
+    <!--</listener>-->
 
-    <!-- set up the servlet stuff -->
-    <servlet id="repose-placeholder-servlet">
-        <servlet-name>only-here-because-it-has-to-be</servlet-name>
-        <servlet-class>org.protorepose.core.servlet.ReposeServlet</servlet-class>
-    </servlet>
+    <!--&lt;!&ndash; set up the servlet stuff &ndash;&gt;-->
+    <!--<servlet id="repose-placeholder-servlet">-->
+        <!--<servlet-name>only-here-because-it-has-to-be</servlet-name>-->
+        <!--<servlet-class>org.protorepose.core.servlet.ReposeServlet</servlet-class>-->
+    <!--</servlet>-->
 
-    <servlet-mapping id="placeholder-servlet-mapping">
-        <servlet-name>only-here-because-it-has-to-be</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping id="placeholder-servlet-mapping">-->
+        <!--<servlet-name>only-here-because-it-has-to-be</servlet-name>-->
+        <!--<url-pattern>/*</url-pattern>-->
+    <!--</servlet-mapping>-->
 
-    <!-- the filter that does all the actual work -->
-    <!-- using the advice from:
-    http://docs.spring.io/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/DelegatingFilterProxy.html
-    Specifically: web.xml will usually contain a DelegatingFilterProxy definition, with the specified filter-name
-    corresponding to a bean name in Spring's root application context. All calls to the filter proxy will then be
-    delegated to that bean in the Spring context, which is required to implement the standard Servlet 2.3 Filter
-    interface.
-    -->
-    <filter id="repose-filter">
-        <filter-name>reposeFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
+    <!--&lt;!&ndash; the filter that does all the actual work &ndash;&gt;-->
+    <!--&lt;!&ndash; using the advice from:-->
+    <!--http://docs.spring.io/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/DelegatingFilterProxy.html-->
+    <!--Specifically: web.xml will usually contain a DelegatingFilterProxy definition, with the specified filter-name-->
+    <!--corresponding to a bean name in Spring's root application context. All calls to the filter proxy will then be-->
+    <!--delegated to that bean in the Spring context, which is required to implement the standard Servlet 2.3 Filter-->
+    <!--interface.-->
+    <!--&ndash;&gt;-->
+    <!--<filter id="repose-filter">-->
+        <!--<filter-name>reposeFilter</filter-name>-->
+        <!--<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+    <!--</filter>-->
 
-    <filter-mapping id="repose-filter-mapping">
-        <filter-name>reposeFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    <!--<filter-mapping id="repose-filter-mapping">-->
+        <!--<filter-name>reposeFilter</filter-name>-->
+        <!--<url-pattern>/*</url-pattern>-->
+    <!--</filter-mapping>-->
 </web-app>
