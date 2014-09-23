@@ -7,12 +7,12 @@ import javax.servlet.{DispatcherType, Filter}
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.eclipse.jetty.annotations.AnnotationConfiguration
-import org.eclipse.jetty.plus.webapp.PlusConfiguration
+import org.eclipse.jetty.plus.webapp.{EnvConfiguration, PlusConfiguration}
 import org.eclipse.jetty.server.{Dispatcher, Server}
 import org.eclipse.jetty.servlet._
 import org.eclipse.jetty.util.component.Container
 import org.eclipse.jetty.util.resource.Resource
-import org.eclipse.jetty.webapp.{WebXmlConfiguration, WebAppContext}
+import org.eclipse.jetty.webapp._
 import org.protorepose.core.CoreSpringProviderImpl
 import org.protorepose.core.servlet.{ReposeFilter, ReposeServlet}
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -62,10 +62,15 @@ object Main extends App with LazyLogging {
     //webapp.setParentLoaderPriority(true)
     //webapp.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/WEB-INF/classes/.*") //TODO: uh oh?
     webapp.setConfigurations(Array(
-      new AnnotationConfiguration(),
+      new AnnotationConfiguration(), //this *should* work, but doesn't, why not?
       new WebXmlConfiguration(),
-      new PlusConfiguration()
+      new WebInfConfiguration()
+//      new PlusConfiguration(),
+//      new MetaInfConfiguration(),
+//      new FragmentConfiguration(),
+//      new EnvConfiguration
     ))
+    webapp.setParentLoaderPriority(true)
     server.setHandler(webapp)
     server.start()
 
