@@ -6,10 +6,13 @@ import javax.servlet.{DispatcherType, Filter}
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.eclipse.jetty.annotations.AnnotationConfiguration
+import org.eclipse.jetty.plus.webapp.PlusConfiguration
 import org.eclipse.jetty.server.{Dispatcher, Server}
 import org.eclipse.jetty.servlet._
 import org.eclipse.jetty.util.component.Container
-import org.eclipse.jetty.webapp.WebAppContext
+import org.eclipse.jetty.util.resource.Resource
+import org.eclipse.jetty.webapp.{WebXmlConfiguration, WebAppContext}
 import org.protorepose.core.CoreSpringProviderImpl
 import org.protorepose.core.servlet.{ReposeFilter, ReposeServlet}
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
@@ -47,14 +50,22 @@ object Main extends App with LazyLogging {
    * So I could deploy programmatically a pair of war files, keeping the JVM stuff separate
    * Not sure how I didn't find this before, but it's super easy. (This could be within old servo)
    * Unfortunately, services are *not* shared amongst the war files, they seem to have their own memory hierarchy
+   * I cannot figure out how to get the war file thingy to pick up my servlet 3.0 stuff :(
    * @param port
    * @return
    */
-  def warServer(port:Int):Server = {
+  def warServer(port: Int): Server = {
     val server = new Server(port)
     val webapp = new WebAppContext()
     webapp.setContextPath("/")
     webapp.setWar(config.getString("warLocation"))
+    //webapp.setParentLoaderPriority(true)
+    //webapp.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/WEB-INF/classes/.*") //TODO: uh oh?
+    webapp.setConfigurations(Array(
+      new AnnotationConfiguration(),
+      new WebXmlConfiguration(),
+      new PlusConfiguration()
+    ))
     server.setHandler(webapp)
     server.start()
 
@@ -73,7 +84,7 @@ object Main extends App with LazyLogging {
    * @param port
    * @return
    */
-  def servletServer(port:Int):Server = {
+  def servletServer(port: Int): Server = {
     val server = new Server(port)
 
     //This is the right kind of web application context, but something is missing -- the servletContext is null somehow
@@ -86,7 +97,7 @@ object Main extends App with LazyLogging {
 
     //Set up some property sources, so we can send information to the spring context (port, clusterID, NodeID)?
     val propSources = servletSpringContext.getEnvironment.getPropertySources
-    val props:Map[String, AnyRef] = Map("port" -> port.toString)
+    val props: Map[String, AnyRef] = Map("port" -> port.toString)
 
     import scala.collection.JavaConversions._
     val myProps = new MapPropertySource("dynamicNodeProps", props)
@@ -126,8 +137,8 @@ object Main extends App with LazyLogging {
   }
 
   logger.info("Starting up servers!")
-  val server1 = servletServer(8080)
-  val server2 = servletServer(8081)
+  val server1 = warServer(8080)
+  val server2 = warServer(8081)
 
   logger.info("Joining to servers!")
   server1.join()
