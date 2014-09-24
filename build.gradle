@@ -72,6 +72,7 @@ subprojects {
 project(':core') {
   //CORE assumes it'll have a servlet api in there somewhere, mostly for the filters.
   dependencies {
+      //Slf4j api comes from the "subprojects" dependency
     compile "org.springframework:spring-context:4.1.0.RELEASE",
             "org.springframework:spring-web:4.1.0.RELEASE"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
@@ -79,6 +80,9 @@ project(':core') {
 }
 import org.apache.tools.ant.filters.ReplaceTokens
 
+/**
+ * This project is valve deployed using jetty servlet configuration
+ */
 project(':valve') {
     apply plugin: "application"
     apply plugin: 'com.github.johnrengelman.shadow'
@@ -106,6 +110,9 @@ project(':valve') {
     }
 }
 
+/**
+ * This is valve deployed using the war file built during the war process.
+ */
 project(':valveWar') {
     apply plugin: "application"
 
