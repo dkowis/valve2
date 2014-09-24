@@ -116,6 +116,12 @@ project(':valve') {
 project(':valveWar') {
     apply plugin: "application"
 
+
+    /*
+    Some preprocessing could be super handy in making valve start faster. It wouldn't affect other containers
+    http://www.eclipse.org/jetty/documentation/current/quickstart-webapp.html
+     */
+
     mainClassName = "org.protorepose.valve.WarMain"
     configurations {
         warArtifact

@@ -47,6 +47,10 @@ object Main extends App with LazyLogging {
    * This will reuse the filter beans even, between servers.
    * Only one instance of the services is turned on, and so this will ensure that services are only running once per local
    * machine.
+   * Each jetty listening on a port will have its own instance of ReposeServlet and of ReposeFilter. They'll inherit
+   * the spring context from the singleton at the top level for services, and for the list of filters that are loaded.
+   * This can probably be telescoped a level or two, but the primary thing of keeping a single context for services is
+   * achieved.
    * @param port
    * @return
    */
