@@ -137,12 +137,12 @@ project(':valveWar') {
     /**
      * This copies the warArtifact dependency configuration into the build directory
      */
-    task copyWarFile(type: Copy) {
+    task copyWarFile(type: Copy, dependsOn: ':war:war') {
         into "$buildDir"
         from configurations.warArtifact
     }
 
-    build.dependsOn(copyWarFile)
+    run.dependsOn(copyWarFile)
 
     processResources {
         filter ReplaceTokens, tokens: [
