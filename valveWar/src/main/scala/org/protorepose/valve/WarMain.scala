@@ -59,6 +59,7 @@ object WarMain extends App with LazyLogging {
     // Recommmend you set these up too.
     // webapp.setPersistTempDirectory(false)
     // webapp.setTempDirectory(pathToTempDirForYourApp)
+
     server.setHandler(webapp)
     server.start()
 
