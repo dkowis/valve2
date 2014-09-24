@@ -1,22 +1,15 @@
 package org.protorepose.valve
 
 import java.util
-import java.util.Properties
-import javax.servlet.{DispatcherType, Filter}
+import javax.servlet.DispatcherType
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.eclipse.jetty.annotations.AnnotationConfiguration
-import org.eclipse.jetty.plus.webapp.{EnvConfiguration, PlusConfiguration}
-import org.eclipse.jetty.server.{Dispatcher, Server}
-import org.eclipse.jetty.servlet._
-import org.eclipse.jetty.util.component.Container
-import org.eclipse.jetty.util.resource.Resource
-import org.eclipse.jetty.webapp._
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.{FilterHolder, ServletContextHandler}
 import org.protorepose.core.CoreSpringProviderImpl
 import org.protorepose.core.servlet.{ReposeFilter, ReposeServlet}
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
-import org.springframework.core.env.{MapPropertySource, EnumerablePropertySource}
+import org.springframework.core.env.MapPropertySource
 import org.springframework.web.context.ContextLoaderListener
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 import org.springframework.web.filter.DelegatingFilterProxy
@@ -45,38 +38,6 @@ object Main extends App with LazyLogging {
   println(banner)
 
   //we'll create two servers one on 8080 and one on 8081
-
-  /**
-   * So I could deploy programmatically a pair of war files, keeping the JVM stuff separate
-   * Not sure how I didn't find this before, but it's super easy. (This could be within old servo)
-   * Unfortunately, services are *not* shared amongst the war files, they seem to have their own memory hierarchy
-   * I cannot figure out how to get the war file thingy to pick up my servlet 3.0 stuff :(
-   * @param port
-   * @return
-   */
-  def warServer(port: Int): Server = {
-    val server = new Server(port)
-    val webapp = new WebAppContext()
-    webapp.setContextPath("/")
-    webapp.setWar(config.getString("warLocation"))
-    //webapp.setParentLoaderPriority(true)
-    //webapp.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/WEB-INF/classes/.*") //TODO: uh oh?
-    webapp.setConfigurations(Array(
-      new AnnotationConfiguration(), //this *should* work, but doesn't, why not?
-      new WebXmlConfiguration(),
-      new WebInfConfiguration()
-//      new PlusConfiguration(),
-//      new MetaInfConfiguration(),
-//      new FragmentConfiguration(),
-//      new EnvConfiguration
-    ))
-    webapp.setParentLoaderPriority(true)
-    server.setHandler(webapp)
-    server.start()
-
-    server
-  }
-
 
   /**
    * Create a servlet based jetty server that allows us to handle some spring contexts separately
@@ -142,8 +103,8 @@ object Main extends App with LazyLogging {
   }
 
   logger.info("Starting up servers!")
-  val server1 = warServer(8080)
-  val server2 = warServer(8081)
+  val server1 = servletServer(8080)
+  val server2 = servletServer(8081)
 
   logger.info("Joining to servers!")
   server1.join()

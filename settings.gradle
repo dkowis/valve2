@@ -1,1 +1,1 @@
-include 'core', 'war', 'valve'
+include 'core', 'war', 'valve', 'valveWar'

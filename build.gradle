@@ -10,8 +10,11 @@ buildscript {
         classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7',
                 //https://github.com/johnrengelman/shadow
                 'com.github.jengelman.gradle.plugins:shadow:1.1.1',
-                //https://github.com/Khoulaiz/gradle-jetty-eclipse-plugin -- Because the gradle jetty is super old
-                'com.sahlbach.gradle:gradle-jetty-eclipse-plugin:1.9+'
+        //https://github.com/Khoulaiz/gradle-jetty-eclipse-plugin -- Because the gradle jetty is super old
+        classpath('com.sahlbach.gradle:gradle-jetty-eclipse-plugin:1.9+') {
+            //Don't include the logback dependency it's got in here, I've got log4j2
+            //exclude group: 'ch.qos.logback', module: 'logback-classic'
+        }
     }
 }
 
@@ -70,9 +73,7 @@ project(':core') {
   //CORE assumes it'll have a servlet api in there somewhere, mostly for the filters.
   dependencies {
     compile "org.springframework:spring-context:4.1.0.RELEASE",
-            "org.springframework:spring-web:4.1.0.RELEASE",
-            "org.apache.logging.log4j:log4j-core:2.0.2",
-            "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2"
+            "org.springframework:spring-web:4.1.0.RELEASE"
     provided 'javax.servlet:javax.servlet-api:3.1.0'
   }
 }
@@ -82,11 +83,36 @@ project(':valve') {
     apply plugin: "application"
     apply plugin: 'com.github.johnrengelman.shadow'
 
+    mainClassName = "org.protorepose.valve.Main"
+    dependencies {
+        compile "org.springframework:spring-web:4.1.0.RELEASE",
+                "org.eclipse.jetty:jetty-server:${jettyVersion}",
+                "org.eclipse.jetty:jetty-webapp:${jettyVersion}",
+                'javax.servlet:javax.servlet-api:3.1.0',
+                "org.apache.logging.log4j:log4j-core:2.0.2",
+                "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2",
+                'com.typesafe:config:1.2.1',
+                //Hard depend on core, if we're going to use the servlet directly
+                project(":core")
+        // http://forums.gradle.org/gradle/topics/problem_with_the_ear_plugin#reply_7176985
+    }
+
+    processResources {
+        filter ReplaceTokens, tokens: [
+                "warLocation": project.property("buildDir").getAbsolutePath(),
+                "version": project.property("version"),
+                "jettyVersion": project.property("jettyVersion")
+        ]
+    }
+}
+
+project(':valveWar') {
+    apply plugin: "application"
+
+    mainClassName = "org.protorepose.valve.WarMain"
     configurations {
         warArtifact
     }
-
-    mainClassName = "org.protorepose.valve.Main"
     dependencies {
         compile "org.springframework:spring-context:4.1.0.RELEASE",
                 "org.eclipse.jetty:jetty-server:${jettyVersion}",
@@ -95,9 +121,7 @@ project(':valve') {
                 "org.eclipse.jetty:jetty-plus:${jettyVersion}",
                 'javax.servlet:javax.servlet-api:3.1.0',
                 'com.typesafe:config:1.2.1',
-                //Hard depend on core, if we're going to use the servlet directly
                 project(":core")
-        // http://forums.gradle.org/gradle/topics/problem_with_the_ear_plugin#reply_7176985
         warArtifact project(path: ":war", configuration: "archives")
     }
 
@@ -118,6 +142,7 @@ project(':valve') {
                 "jettyVersion": project.property("jettyVersion")
         ]
     }
+
 }
 
 project(':war') {
@@ -127,7 +152,12 @@ project(':war') {
     dependencies {
         //See: http://logging.apache.org/log4j/2.x/maven-artifacts.html under "Web Servlet Support"
         // This *might* also matter: http://logging.apache.org/log4j/2.x/manual/webapp.html
-        compile project(':core'), "org.apache.logging.log4j:log4j-web:2.0.2", "org.springframework:spring-web:4.1.0.RELEASE"
+        compile project(':core'),
+                "org.apache.logging.log4j:log4j-web:2.0.2",
+                "org.springframework:spring-web:4.1.0.RELEASE",
+                "org.apache.logging.log4j:log4j-core:2.0.2",
+                "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2"
+
         provided 'javax.servlet:javax.servlet-api:3.1.0'
     }
 }

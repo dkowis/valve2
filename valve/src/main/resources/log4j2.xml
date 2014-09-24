@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %highlight{%-5level} %logger{1.} - %msg%n"/>
+        </Console>
+        <File name="DEBUGFILE" fileName="jetty-debug.log" append="false">
+            <PatternLayout>
+                <Pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <!-- Jetty should make less noise -->
+        <Logger name="jndi" level="warn"/>
+        <Logger name="org.eclipse.jetty.jndi" level="warn"/>
+        <Logger name="org.eclipse.jetty.server" level="info"/>
+        <Logger name="org.eclipse.jetty.http" level="info"/>
+        <Logger name="org.eclipse.jetty.io" level="info"/>
+        <!-- Keep these at info or higher due to bug https://bugs.eclipse.org/444547 -->
+        <Logger name="org.eclipse.jetty.server.ResourceCache" level="info"/>
+        <Logger name="org.eclipse.jetty.servlet" level="info"/>
+
+        <!-- to see each and every class that is annotation/type parsed, set this to level 'debug' -->
+        <Logger name="org.eclipse.jetty.annotations.AnnotationParser" level="info"/>
+
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="DEBUGFILE"/>
+        </Root>
+    </Loggers>
+</Configuration>

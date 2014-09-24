@@ -30,6 +30,7 @@ class DerpFilter @Autowired()(service:Service, coreService:CoreService) extends 
     response.getWriter.write(counter.toString)
     response.getWriter.write(" from the external service!\n")
     response.getWriter.write(s"${coreCounter.toString} from the core service!")
+    response.getWriter.flush()
 
     logger.info(s"Service is ${service}")
   }
